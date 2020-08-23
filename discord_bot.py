@@ -9,9 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class TwitchScripterBot(discord.Client):
-    def __init__(self, twitch_id: str):
+    def __init__(self, twitch_id: str, vad_aggressiveness: int = 1):
         super().__init__()
         self.twitch_id = twitch_id
+        self.vad_aggressiveness = vad_aggressiveness
         self.loop.create_task(self.twitch_scripter_backend())
 
     async def on_ready(self):
@@ -33,7 +34,10 @@ class TwitchScripterBot(discord.Client):
 
         twitch_scripter_thread = Thread(
             target=twitch_scripter.start,
-            kwargs={'callback': self.send_message_to_server}
+            kwargs={
+                'vad_aggressiveness': self.vad_aggressiveness,
+                'callback': self.send_message_to_server,
+            }
         )
         twitch_scripter_thread.start()
 
