@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from threading import Thread
 
@@ -19,7 +20,7 @@ class TwitchScripterBot(discord.Client):
         logger.info(f'Logged on as {self.user}.')
 
     async def on_message(self, message):
-        logger.info('Message from {0.author}: {0.content}'.format(message))
+        logger.debug('Message from {0.author}: {0.content}'.format(message))
         if message.author == self.user:
             return
 
@@ -62,8 +63,7 @@ class TwitchScripterBot(discord.Client):
 
     def send_message_to_server(self, message: str):
         if message:
-            task = self.channel.send(message)
-            self.loop.create_task(task)
+            asyncio.run_coroutine_threadsafe(self.channel.send(message), loop=self.loop)
 
 
 if __name__ == '__main__':
