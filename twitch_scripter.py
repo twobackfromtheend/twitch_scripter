@@ -4,10 +4,10 @@ import threading
 from typing import Callable
 
 import numpy as np
-from halo import Halo
 from deepspeech import Model
+from halo import Halo
 
-from main import pbmm_path, scorer_path
+from main import pbmm_path
 from twitch_audio import TwitchAudio
 from vad import VadSegmenter
 
@@ -29,10 +29,10 @@ class TwitchScripter:
 
         self.spinner = Halo(
             text='Calculating...',
-            spinner='dots2',
+            spinner='line',
         )
 
-    def start(self, callback: Callable[[str], None] = None):
+    def start(self, vad_aggressiveness: int=3, callback: Callable[[str], None] = None):
         process = self.audio.connect(self.q)
 
         def read_audio():
@@ -47,7 +47,7 @@ class TwitchScripter:
         # ds_model.enableExternalScorer(str(scorer_path))
         stream_context = ds_model.createStream()
 
-        vad_segmenter = VadSegmenter(1)
+        vad_segmenter = VadSegmenter(vad_aggressiveness)
         for frame in vad_segmenter.segmenter(
                 self.q,
                 block_size=self.block_size, sample_rate=self.sample_rate,
@@ -70,4 +70,4 @@ class TwitchScripter:
 
 if __name__ == '__main__':
     twitch_scripter = TwitchScripter('gothamchess')
-    twitch_scripter.start(callback=lambda x: print(f"Decoded: {x}"))
+    twitch_scripter.start(vad_aggressiveness=1, callback=lambda x: print(f"Decoded: {x}"))
