@@ -1,0 +1,9 @@
+deepspeech
+discord.py
+ffmpeg-python
+halo
+numpy
+scipy
+sounddevice
+streamlink
+webrtcvad
